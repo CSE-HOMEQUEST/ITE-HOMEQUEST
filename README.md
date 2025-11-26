@@ -29,7 +29,112 @@
 
 
 ## II. Datasets
+The HomeQuest project constructs a dataset based on **event-level simulation logs**, designed to emulate real service conditions. Each time a family member interacts with or attempts a challenge, the system generates an **event record** containing contextual information such as challenge attributes, temporal features, device metadata, user identity, accumulated points, and the final outcome (success or failure).
 
+This dataset structure enables the ML model to **predict the likelihood of challenge completion** under various conditions.
+
+---
+
+## **1. Dataset Structure**
+
+The dataset consists of **several thousand event records**, where each entry corresponds to a single challenge attempt.
+
+Each event contains three main categories of information:
+
+---
+
+### **① Challenge Attributes**
+
+- **category**: Type of challenge (household, energy, wellness)
+- **mode**: daily / speed / monthly
+- **durationType**: daily, weekly, or monthly period
+- **progressType**: individual, family, or relay
+- **deviceType**: Device involved (washer, air conditioner, smartwatch, etc.)
+
+---
+
+### **② Temporal & Contextual Information**
+
+- **eventDate**: Date of the event
+- **day_index**: Normalized day index within the dataset (for time-series analysis)
+- **weekday**: Day of the week
+- **notificationTime**: Time when the challenge notification was delivered
+- **completionTime**: Time when the challenge was actually completed
+- **timeSlot**: Time-of-day category (morning / afternoon / evening)
+
+---
+
+### **③ Outcome Information (Model Target Included)**
+
+- **completed**: Whether the challenge was completed (True/False) → **model label (Y)**
+- **personalPoints**: Points earned by the user
+- **familyPoints**: Points added to the family total
+- **energyKwh**: Energy usage (for energy-related challenges)
+
+---
+
+### **+ Metadata (Identifiers)**
+
+- **eventId**, **familyId**, **userId**, **challengeId**
+
+---
+
+## **2. Purpose of the Dataset**
+
+The event-based dataset serves two primary purposes:
+
+### **1) ML Model Training**
+
+Using the challenge attributes, temporal features, and contextual information,
+
+the model is trained to **predict whether a given event (challenge attempt) will be completed successfully**.
+
+### **2) Model Performance Evaluation**
+
+A subset of simulated events is used as the test set for evaluating the model’s performance using **AUC (Area Under the ROC Curve)**.
+
+This approach allows the model to learn realistic behavioral patterns even before real service data becomes available.
+
+---
+
+## **3. Sample Format (Actual Model Input)**
+
+```json
+{
+  "eventId": 10291,
+  "familyId": "F001",
+  "userId": "mom",
+  "challengeId": "CH12",
+
+  "category": "household",
+  "mode": "daily",
+  "durationType": "daily",
+  "progressType": "individual",
+  "deviceType": "washer",
+
+  "eventDate": "2025-11-20",
+  "day_index": 18,
+  "weekday": 4,
+  "notificationTime": "20:00",
+  "completionTime": "21:13",
+  "timeSlot": "evening",
+
+  "completed": true,
+  "personalPoints": 4,
+  "familyPoints": 4,
+  "energyKwh": 0.2
+}
+
+```
+
+---
+
+## **4. Summary of Dataset Characteristics**
+
+- **Event-driven structure**
+- **Simulated logs designed to closely approximate real service behavior**
+- **Structured to capture patterns that influence challenge completion**
+- **Optimized for AUC-based performance evaluation**
 
 ## III. Methodology
 
