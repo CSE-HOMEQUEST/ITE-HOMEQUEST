@@ -43,7 +43,7 @@ Each event contains three main categories of information:
 
 ---
 
-### **① Challenge Attributes**
+### **1) Challenge Attributes**
 
 - **category**: Type of challenge (household, energy, wellness)
 - **mode**: daily / speed / monthly
@@ -53,7 +53,7 @@ Each event contains three main categories of information:
 
 ---
 
-### **② Temporal & Contextual Information**
+### **2) Temporal & Contextual Information**
 
 - **eventDate**: Date of the event
 - **day_index**: Normalized day index within the dataset (for time-series analysis)
@@ -64,7 +64,7 @@ Each event contains three main categories of information:
 
 ---
 
-### **③ Outcome Information (Model Target Included)**
+### **3) Outcome Information (Model Target Included)**
 
 - **completed**: Whether the challenge was completed (True/False) → **model label (Y)**
 - **personalPoints**: Points earned by the user
