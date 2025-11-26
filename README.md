@@ -1,4 +1,4 @@
-# HomeQuest: 
+# HomeQuest: AI-based Family Challenges with LG Devices
 >한양대학교 2025-2 소프트웨어공학/인공지능및응용 프로젝트 (SWE/ITE Project in Hanyang Univ. 2025-2)
 
 
@@ -21,16 +21,11 @@
   HomeQuest is not just a gamified household app; it is an intelligent system that recommends the right challenge at the right moment for each family. By combining smart-home data with personalized behavioral modeling, HomeQuest aims to increase family engagement, support healthier habits, and naturally optimize daily routines with minimal manual effort.
 
 ### what do you want to see at the end?
-1. Develop an AI-driven challenge recommendation system
-    - We model family behavior using activity logs, smart-home device usage, and past challenge results. Based on these patterns, the AI automatically selects the most suitable missions for each family.
-2. Create an autonomous routine system
-    - As the model learns implicit habits and preferred time windows, it optimizes the daily flow so that challenges appear at the right moment without requiring user input. For example, Speed challenges automatically shift to the family’s most active time period, and if no one participates, the system recommends an alternative time.
-3. Implement a functional prototype integrated with smart-home and real behavioral data
-    - Using real-time synchronization via Firebase and IoT device logs, the system can detect unusual patterns and provide corresponding recommendations. For instance, during months of high heating usage, the system automatically suggests energy-saving missions.
-4. Build a system that continuously improves routines by learning from success and failure patterns
-    - When users skip missions or repeatedly fail them, the system updates its internal models of difficulty and engagement. Through this feedback loop, the AI refines its recommendations and adjusts difficulty dynamically.
+  We envision a smart home that goes beyond simply delivering information—a platform that seamlessly connects family members’ behaviors, habits, and meaningful changes.
 
-Ultimately, our vision is to create “a home routine that adapts to families,” rather than forcing families to adapt to their routines.
+  The ultimate goal of this project is to build an interactive challenge and feedback environment where AI analyzes IoT and wearable data to support shared participation and communication within the family.
+
+  Through this system, we aim to create a smart-home experience in which small daily actions become meaningful motivation and enjoyable moments for every family member, ultimately transforming the home into a space that encourages collaboration, engagement, and positive routines.
 
 
 ## II. Datasets
