@@ -14,11 +14,11 @@
 ## I. Introduction
 ### Motivation: Why are you doing this?
 
-  It is not easy to maintain healthy habits, household routines, and energy-saving behaviors consistently. Most existing apps treat all users the same and fail to reflect each family’s unique lifestyle patterns or smart-home usage behaviors. As a result, routines easily break down, and family engagement drops quickly.
+  We believe that smart homes should evolve beyond simply displaying appliance information and become an *experience platform* that naturally connects family members’ daily behaviors. However, current smart home services still follow a one-way structure—**providing data and expecting users to act on their own**—which makes it difficult to sustain real behavior change or meaningful family interaction.
 
-  People also do not want to manually decide what tasks to do each day, coordinate household schedules, or constantly adjust smart-home devices. These repetitive micro-decisions create fatigue and inefficiency. To address these issues, we aim to develop an AI-based routine and challenge recommendation system that automatically suggests personalized activities using real behavior data, device usage logs, and past success or failure records.
+  AI becomes essential in this project because it is the only technology capable of transforming the vast IoT and wearable data collected from everyday life into **personalized challenge experiences**. By learning each family’s life patterns, device-usage patterns, time preferences, and behavioral changes, AI can offer **sustainable and customized challenges**, **naturally facilitate interactions among family members**, and **generate motivating feedback based on their progress** in real time.
 
-  HomeQuest is not just a gamified household app; it is an intelligent system that recommends the right challenge at the right moment for each family. By combining smart-home data with personalized behavioral modeling, HomeQuest aims to increase family engagement, support healthier habits, and naturally optimize daily routines with minimal manual effort.
+  With this approach, the smart home can move beyond a passive information system and become an **interactive space where families naturally participate and engage with one another**. In this environment, AI helps transform small everyday behaviors into shared moments of motivation, fun, and challenge—making the overall experience more meaningful and easier to sustain. This provides the foundation for what we aim to achieve with the HomeQuest project.
 
 ### what do you want to see at the end?
   We envision a smart home that goes beyond simply delivering information—a platform that seamlessly connects family members’ behaviors, habits, and meaningful changes.
