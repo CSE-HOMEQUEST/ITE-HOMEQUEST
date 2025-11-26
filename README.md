@@ -1,6 +1,7 @@
 # HomeQuest: 
 >한양대학교 2025-2 소프트웨어공학/인공지능및응용 프로젝트 (SWE/ITE Project in Hanyang Univ. 2025-2)
 
+
 ## Members
 | Name | Organization | Email |
 |------|-------------|--------|
@@ -8,6 +9,7 @@
 | Sihyun Jang | Dept. of Information Systems, Hanyang University | jjj99nine2@hanyang.ac.kr |
 | Jin Yun | Dept. of Information Systems, Hanyang University | jinijini0402@hanyang.ac.kr |
 | Yeonsoo cho | Dept. of Public Administration, Hanyang University | meriel1010@hanyang.ac.kr |
+
 
 ## I. Introduction
 ### Motivation: Why are you doing this?
@@ -29,6 +31,7 @@
     - When users skip missions or repeatedly fail them, the system updates its internal models of difficulty and engagement. Through this feedback loop, the AI refines its recommendations and adjusts difficulty dynamically.
 
 Ultimately, our vision is to create “a home routine that adapts to families,” rather than forcing families to adapt to their routines.
+
 
 ## II. Datasets
 
