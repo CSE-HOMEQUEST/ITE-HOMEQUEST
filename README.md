@@ -43,7 +43,7 @@ Each event contains three main categories of information:
 
 ---
 
-### ① Challenge Attributes
+### 1) Challenge Attributes
 
 - category: Type of challenge (household, energy, wellness)
 - mode: daily / speed / monthly
@@ -53,7 +53,7 @@ Each event contains three main categories of information:
 
 ---
 
-### ② Temporal & Contextual Information
+### 2) Temporal & Contextual Information
 
 - eventDate: Date of the event
 - day_index: Normalized day index within the dataset (for time-series analysis)
@@ -64,7 +64,7 @@ Each event contains three main categories of information:
 
 ---
 
-### ③ Outcome Information (Model Target Included)
+### 3) Outcome Information (Model Target Included)
 
 - completed: Whether the challenge was completed (True/False) → model label (Y)
 - personalPoints: Points earned by the user
@@ -128,7 +128,105 @@ This approach allows the model to learn realistic behavioral patterns even befor
 ```
 
 ## III. Methodology
+This project utilizes simulation-generated event data to train two classification models:
 
+1. A general challenge completion prediction model, and
+2. A speed-challenge model that predicts whether a challenge will be completed within one hour.
+
+Both models use scikit-learn’s GradientBoostingClassifier (GBDT) with default hyperparameters, and only `random_state=42` is specified for reproducibility.
+
+---
+
+## 1. Algorithm Selection (Gradient Boosting Classifier)
+
+GBDT is an ensemble method based on decision trees and is well suited for datasets like ours, which contain a mixture of categorical features (e.g., mode, category, timeSlot) and numerical features (e.g., points, energyKwh).
+
+Tree-based models naturally capture combinational conditions, such as:
+
+- “weekday + timeSlot + challenge category”
+- “point level + mode type”
+
+Additionally, GBDT provides probability outputs through `predict_proba()`, which makes it highly suitable for future extensions into a recommendation system that prioritizes challenges with a higher predicted success likelihood.
+
+For these reasons, GBDT was selected as the core algorithm for this project.
+
+---
+
+## 2. Main Model: Predicting Challenge Completion (completed)
+
+The first model predicts whether a challenge is completed (0/1) across all modes, including daily, speed, and monthly events.
+
+### (1) Feature Construction
+
+The following features from the codebase are used:
+
+- weekday
+- personalPoints
+- familyPoints
+- energyKwh
+- timeSlot
+- mode
+- category
+- durationType
+- progressType
+- deviceType
+
+Categorical variables such as `timeSlot`, `mode`, and `category` are converted into one-hot encoded vectors before being fed into the model.
+
+### (2) Training and Evaluation
+
+To respect the time-dependent nature of the data,
+
+the dataset is divided using `day_index`:
+
+- first 2/3 → train set
+- last 1/3 → test set
+
+The model is trained using the default GBDT configuration, and predictions are evaluated using `predict_proba()`.
+
+Model performance is assessed using AUC (ROC-AUC), which measures how well the model distinguishes between successful and unsuccessful challenge events.
+
+---
+
+## 3. Speed-Challenge Model: Predicting 1-Hour Completion (completed_within_1h)
+
+The second model focuses exclusively on speed-mode events, predicting whether a speed challenge is completed within one hour after notification.
+
+### (1) Label Construction
+
+Notification and completion times are converted into minutes to compute `duration_min`.
+
+The label `completed_within_1h` is defined as:
+
+- completed = 1
+- duration_min ≤ 60
+    
+    → `1`
+    
+
+Otherwise: `0`.
+
+### (2) Feature Construction and Training
+
+Features used for the speed model:
+
+- weekday
+- timeSlot
+- category
+- challengeId
+- personalPoints
+- familyPoints
+- energyKwh
+
+Categorical variables (timeSlot, category, challengeId) are one-hot encoded, and the entire set of speed events is used to train a GBDT classifier.
+
+AUC is again used as the evaluation metric.
+
+### (3) Practical Use
+
+The trained speed model is used to estimate the probability of completing a speed challenge within one hour for different timeSlot options.
+
+This allows the system to select and recommend the optimal timeSlot with the highest predicted success probability.
 
 ## IV. Evaluation & Analysis
 
