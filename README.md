@@ -121,10 +121,12 @@ Because the dataset is fixed, the evaluation is reproducible.
 ---
 
 ## Sample Record
-day_index	userId	challengeId	category	mode	notificationTime	completionTime	completed	personalPoints	energyKwh
-12	user_4	daily_water_2	health	daily	09:00:00	09:12:00	1	4	0.0
-12	user_4	speed_dishwasher	dishwashing	speed	18:00:00	18:34:00	1	4	0.0
-30	user_4	monthly_heating	energy	monthly	20:00:00	—	0	4	0.7
+| day_index | userId  | challengeId       | category     | mode     | notificationTime | completionTime | completed | personalPoints | energyKwh |
+|-----------|---------|-------------------|--------------|----------|------------------|----------------|-----------|----------------|-----------|
+| 12        | user_4  | daily_water_2     | health       | daily    | 09:00:00         | 09:12:00       | 1         | 4              | 0.0       |
+| 12        | user_4  | speed_dishwasher  | dishwashing  | speed    | 18:00:00         | 18:34:00       | 1         | 4              | 0.0       |
+| 30        | user_4  | monthly_heating   | energy       | monthly  | 20:00:00         | —              | 0         | 4              | 0.7       |
+
 
 
 
