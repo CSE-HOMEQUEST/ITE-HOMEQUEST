@@ -29,101 +29,100 @@
 
 
 ## II. Datasets
-The HomeQuest project constructs a dataset based on event-level simulation logs, designed to emulate real service conditions. Each time a family member interacts with or attempts a challenge, the system generates an event record containing contextual information such as challenge attributes, temporal features, device metadata, user identity, accumulated points, and the final outcome (success or failure).
+HomeQuest uses a fixed six-month simulated event-log dataset designed to mimic a real smart-home service environment.
 
-This dataset structure enables the ML model to predict the likelihood of challenge completion under various conditions.
+Each event represents a full challenge interaction by a family member and contains challenge attributes, user context, time information, device data, energy usage, and success outcomes.
 
----
-
-## 1. Dataset Structure
-
-The dataset consists of several thousand event records, where each entry corresponds to a single challenge attempt.
-
-Each event contains three main categories of information:
+This structure enables machine-learning models to learn how various conditions influence the likelihood of completing each challenge.
 
 ---
 
-### 1) Challenge Attributes
+## Dataset Structure
 
-- category: Type of challenge (household, energy, wellness)
-- mode: daily / speed / monthly
-- durationType: daily, weekly, or monthly period
-- progressType: individual, family, or relay
-- deviceType: Device involved (washer, air conditioner, smartwatch, etc.)
+The dataset consists of approximately 366 days of logs for a single family, with multiple events recorded each day.
+
+Each event includes the following groups of information.
 
 ---
 
-### 2) Temporal & Contextual Information
+### Challenge Metadata
 
-- eventDate: Date of the event
-- day_index: Normalized day index within the dataset (for time-series analysis)
-- weekday: Day of the week
-- notificationTime: Time when the challenge notification was delivered
-- completionTime: Time when the challenge was actually completed
-- timeSlot: Time-of-day category (morning / afternoon / evening)
-
----
-
-### 3) Outcome Information (Model Target Included)
-
-- completed: Whether the challenge was completed (True/False) → model label (Y)
-- personalPoints: Points earned by the user
-- familyPoints: Points added to the family total
-- energyKwh: Energy usage (for energy-related challenges)
+- `challengeId`
+- `category` (health, cleaning, laundry, energy…)
+- `mode` (daily, speed, monthly)
+- `durationType`
+- `progressType`
+- `deviceType`
+- `cooldown_days` (repeat restriction)
 
 ---
 
-### + Metadata (Identifiers)
+### Time, User, and Context Information
 
-- eventId, familyId, userId, challengeId
+- `day_index` (time-series index)
+- `eventDate`
+- `weekday`
+- `userId` (four distinct lifestyle patterns, including a student-type user)
+- `familyId`
+- `notificationTime`
+- `completionTime`
+- `energyKwh`
 
----
-
-## 2. Purpose of the Dataset
-
-The event-based dataset serves two primary purposes:
-
-### 1) ML Model Training
-
-Using the challenge attributes, temporal features, and contextual information,
-
-the model is trained to predict whether a given event (challenge attempt) will be completed successfully.
-
-### 2) Model Performance Evaluation
-
-A subset of simulated events is used as the test set for evaluating the model’s performance using AUC (Area Under the ROC Curve).
-
-This approach allows the model to learn realistic behavioral patterns even before real service data becomes available.
+Different users follow different lifestyle patterns (morning-type, regular, evening-type, student), allowing the model to learn variations in activity timing and behavior.
 
 ---
 
-## 3. Sample Format (Actual Model Input)
+### Outcome Labels
 
-```json
-{
-  "eventId": 10291,
-  "familyId": "F001",
-  "userId": "mom",
-  "challengeId": "CH12",
+Two labels are provided for model training.
 
-  "category": "household",
-  "mode": "daily",
-  "durationType": "daily",
-  "progressType": "individual",
-  "deviceType": "washer",
+completed
 
-  "eventDate": "2025-11-20",
-  "day_index": 18,
-  "weekday": 4,
-  "notificationTime": "20:00",
-  "completionTime": "21:13",
-  "timeSlot": "evening",
+– 1 if the challenge was completed within the same day
 
-  "completed": true,
-  "personalPoints": 4,
-  "familyPoints": 4,
-  "energyKwh": 0.2
-}
+– used as the target of the main model
+
+completed_within_1h
+
+– 1 if the user completed the challenge within 60 minutes after the notification
+
+– used for the speed-challenge time optimization model
+
+---
+
+## Dataset Usage
+
+The dataset is used for both training and evaluating machine-learning models.
+
+---
+
+### Model Training
+
+Main Model
+
+Predicts the probability of completing a challenge under the current conditions.
+
+Inputs include weekday, category, mode, points, device type, userId, and contextual features.
+
+Speed Model
+
+Predicts the probability of completing a speed-mode challenge within one hour.
+
+Uses weekday, notification time (in minutes), userId, and challenge attributes.
+
+---
+
+### Model Evaluation
+
+A time-based train/test split is applied using `day_index`,
+
+and AUC is used as the evaluation metric.
+
+Because the dataset is fixed, the evaluation is reproducible.
+
+---
+
+## Sample Record
 
 ```
 
