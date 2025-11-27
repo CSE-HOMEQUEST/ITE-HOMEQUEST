@@ -131,105 +131,89 @@ Because the dataset is fixed, the evaluation is reproducible.
 
 
 ## III. Methodology
-This project utilizes simulation-generated event data to train two classification models:
+## 1. Choice of Algorithms
 
-1. A general challenge completion prediction model, and
-2. A speed-challenge model that predicts whether a challenge will be completed within one hour.
+The HomeQuest dataset contains both categorical features (weekday, userId, category, mode, device type) and numerical features (points, energy usage, notification time).
 
-Both models use scikit-learn’s GradientBoostingClassifier (GBDT) with default hyperparameters, and only `random_state=42` is specified for reproducibility.
+User behavior also shows non-linear patterns, especially in time-of-day and task-type differences.
 
----
+For these reasons, a tree-based ensemble model was selected.
 
-## 1. Algorithm Selection (Gradient Boosting Classifier)
+We adopt the Gradient Boosting Classifier (GBDT) because it:
 
-GBDT is an ensemble method based on decision trees and is well suited for datasets like ours, which contain a mixture of categorical features (e.g., mode, category, timeSlot) and numerical features (e.g., points, energyKwh).
+- handles mixed feature types without heavy preprocessing
+- captures complex interactions in user activity patterns
+- provides stable performance even with limited feature engineering
 
-Tree-based models naturally capture combinational conditions, such as:
+Two separate GBDT models are trained:
 
-- “weekday + timeSlot + challenge category”
-- “point level + mode type”
-
-Additionally, GBDT provides probability outputs through `predict_proba()`, which makes it highly suitable for future extensions into a recommendation system that prioritizes challenges with a higher predicted success likelihood.
-
-For these reasons, GBDT was selected as the core algorithm for this project.
+- a model predicting whether a daily/monthly challenge will be completed
+- a model predicting whether a speed challenge will be completed within one hour
 
 ---
 
-## 2. Main Model: Predicting Challenge Completion (completed)
+## 2. Features and Code Structure
 
-The first model predicts whether a challenge is completed (0/1) across all modes, including daily, speed, and monthly events.
+### Feature Design
 
-### (1) Feature Construction
+Each model uses event-level features extracted from the simulated logs.
 
-The following features from the codebase are used:
+User and Time Features
 
-- weekday
-- personalPoints
-- familyPoints
-- energyKwh
-- timeSlot
-- mode
-- category
-- durationType
-- progressType
-- deviceType
+- weekday: weekly behavior patterns
+- userId: differences in lifestyle rhythms among users
+- notificationTime: key variable for speed-challenge responsiveness
+- energyKwh: signals related to heating/energy tasks
 
-Categorical variables such as `timeSlot`, `mode`, and `category` are converted into one-hot encoded vectors before being fed into the model.
+Challenge Attributes
 
-### (2) Training and Evaluation
+- category, mode
+- durationType: distinguishes between short-term and long-term difficulty
+- progressType: counter/device/energy, representing the nature of the action
+- deviceType: appliance involvement
 
-To respect the time-dependent nature of the data,
-
-the dataset is divided using `day_index`:
-
-- first 2/3 → train set
-- last 1/3 → test set
-
-The model is trained using the default GBDT configuration, and predictions are evaluated using `predict_proba()`.
-
-Model performance is assessed using AUC (ROC-AUC), which measures how well the model distinguishes between successful and unsuccessful challenge events.
+All categorical variables are transformed through one-hot encoding before training.
 
 ---
 
-## 3. Speed-Challenge Model: Predicting 1-Hour Completion (completed_within_1h)
+## 3. Code Structure Overview
 
-The second model focuses exclusively on speed-mode events, predicting whether a speed challenge is completed within one hour after notification.
+The recommendation pipeline is structured as follows:
 
-### (1) Label Construction
+Dataset Loading
 
-Notification and completion times are converted into minutes to compute `duration_min`.
+- A fixed six-month event log (CSV) is loaded and treated as the “historical behavior” of the family.
+- This approach mirrors real smart-home environments where past interactions remain constant.
 
-The label `completed_within_1h` is defined as:
+Model Training
 
-- completed = 1
-- duration_min ≤ 60
+- A time-aware split using `day_index` separates training and testing periods.
+- Two GBDT models are trained: one for daily/monthly challenges and one for speed tasks.
+
+Candidate Filtering
+
+- Challenges with active cooldown restrictions are removed.
+- Energy-saving tasks are considered only when heating usage increases.
+
+Model Scoring
+
+- The main model outputs completion probabilities.
+- The speed model outputs one-hour completion probabilities for each possible notification time.
+
+Diversity Adjustment
+
+- Only the top candidates (top-K) are kept.
+- A softmax-based sampling step prevents the system from recommending the same challenge repeatedly.
+- Recommendation counts are stored in a JSON file and used to reduce the score of frequently recommended items.
+
+Final Recommendation
+
+- The system outputs one recommended daily task, one monthly task (if applicable),
     
-    → `1`
+    and one speed challenge with an optimized notification time.
     
 
-Otherwise: `0`.
-
-### (2) Feature Construction and Training
-
-Features used for the speed model:
-
-- weekday
-- timeSlot
-- category
-- challengeId
-- personalPoints
-- familyPoints
-- energyKwh
-
-Categorical variables (timeSlot, category, challengeId) are one-hot encoded, and the entire set of speed events is used to train a GBDT classifier.
-
-AUC is again used as the evaluation metric.
-
-### (3) Practical Use
-
-The trained speed model is used to estimate the probability of completing a speed challenge within one hour for different timeSlot options.
-
-This allows the system to select and recommend the optimal timeSlot with the highest predicted success probability.
+This hybrid design combines model-based prediction with policy-based logic, enabling personalized and context-aware challenge recommendations.
 
 ## IV. Evaluation & Analysis
 
