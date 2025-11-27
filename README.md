@@ -47,26 +47,26 @@ Each event includes the following groups of information.
 
 ### Challenge Metadata
 
-- `challengeId`
-- `category` (health, cleaning, laundry, energy…)
-- `mode` (daily, speed, monthly)
-- `durationType`
-- `progressType`
-- `deviceType`
-- `cooldown_days` (repeat restriction)
+- `challengeId` — unique identifier for each challenge
+- `category` — thematic group (health, cleaning, laundry, energy, etc.)
+- `mode` — challenge type (daily task, speed challenge, monthly goal)
+- `durationType` — expected duration (short or long)
+- `progressType` — how progress is measured (counter/device/energy)
+- `deviceType` — device involved (washer, AC, robot vacuum, none)
+- `cooldown_days` — required waiting period before the challenge can be repeated
 
 ---
 
 ### Time, User, and Context Information
 
-- `day_index` (time-series index)
-- `eventDate`
-- `weekday`
-- `userId` (four distinct lifestyle patterns, including a student-type user)
-- `familyId`
-- `notificationTime`
-- `completionTime`
-- `energyKwh`
+- `day_index` — sequential index of days for time-series learning
+- `eventDate` — actual calendar date of the event
+- `weekday` — day of week (0–6) representing user routine patterns
+- `userId` — user identity, mapped to distinct lifestyle profiles
+- `familyId` — household identifier (single family in demo)
+- `notificationTime` — time when the challenge was delivered to the user
+- `completionTime` — time when the challenge was completed (if any)
+- `energyKwh` — daily heating/energy consumption related to energy tasks
 
 Different users follow different lifestyle patterns (morning-type, regular, evening-type, student), allowing the model to learn variations in activity timing and behavior.
 
@@ -114,9 +114,7 @@ Uses weekday, notification time (in minutes), userId, and challenge attributes.
 
 ### Model Evaluation
 
-A time-based train/test split is applied using `day_index`,
-
-and AUC is used as the evaluation metric.
+A time-based train/test split is applied using `day_index`, and AUC is used as the evaluation metric.
 
 Because the dataset is fixed, the evaluation is reproducible.
 
