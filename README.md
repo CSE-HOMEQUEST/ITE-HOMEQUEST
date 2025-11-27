@@ -5,7 +5,7 @@
 ## Members
 | Name | Organization | Email |
 |------|-------------|--------|
-| Hyeonseo Shim | Dept. of Information Systems, Hanyang University | hyeonseo321@gmail.com |
+| Hyeonseo Shim | Dept. of Information Systems, Hanyang University | andyandy21@hanyang.ac.kr |
 | Sihyun Jang | Dept. of Information Systems, Hanyang University | jjj99nine2@hanyang.ac.kr |
 | Jin Yun | Dept. of Information Systems, Hanyang University | jinijini0402@hanyang.ac.kr |
 | Yeonsoo cho | Dept. of Public Administration, Hanyang University | meriel1010@hanyang.ac.kr |
