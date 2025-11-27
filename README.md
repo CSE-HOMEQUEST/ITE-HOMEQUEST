@@ -125,7 +125,8 @@ day_index	userId	challengeId	category	mode	notificationTime	completionTime	compl
 12	user_4	daily_water_2	health	daily	09:00:00	09:12:00	1	4	0.0
 12	user_4	speed_dishwasher	dishwashing	speed	18:00:00	18:34:00	1	4	0.0
 30	user_4	monthly_heating	energy	monthly	20:00:00	—	0	4	0.7
-```
+
+
 
 ## III. Methodology
 This project utilizes simulation-generated event data to train two classification models:
