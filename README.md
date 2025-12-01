@@ -217,6 +217,7 @@ This hybrid design combines model-based prediction with policy-based logic, enab
 
 ## IV. Evaluation & Analysis
 This section presents the evaluation of the Gradient Boosting Decision Tree model trained on six months of simulated HomeQuest activity logs. The goal is not perfect binary prediction but estimating relative completion likelihoods for ranking daily challenges.
+
 A. Dataset and Evaluation Setup
 
 - Input features include weekday, personal points, family points, energy usage, mode, category, duration type, progress type, device type, and user identifier.
@@ -249,18 +250,6 @@ C. Trend Comparison Using Moving Average
 
 To provide a clearer comparison between predicted probabilities and actual completion behavior, a moving average with a window size of ten samples was applied.
 
-Insert Figure here:
-
-Figure X. Smoothed Trends of Predicted and Actual Completion
-(graph file: gbdt_smoothed_trend.png)
-
-Use the following in Overleaf:
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.48\textwidth]{gbdt_smoothed_trend.png}
-\caption{Smoothed trends of predicted probabilities and actual completion rates.}
-\end{figure}
 
 Interpretation:
 
