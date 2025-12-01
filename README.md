@@ -249,6 +249,7 @@ Therefore, these values are acceptable within the context of recommendation logi
 C. Trend Comparison Using Moving Average
 
 To provide a clearer comparison between predicted probabilities and actual completion behavior, a moving average with a window size of ten samples was applied.
+<img width="3000" height="1200" alt="gbdt_smoothed_trend" src="https://github.com/user-attachments/assets/5a14165c-6737-4df8-bf44-c4129212395a" />
 
 
 Interpretation:
