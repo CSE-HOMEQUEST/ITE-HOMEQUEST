@@ -216,7 +216,96 @@ Final Recommendation
 This hybrid design combines model-based prediction with policy-based logic, enabling personalized and context-aware challenge recommendations.
 
 ## IV. Evaluation & Analysis
+This section presents the evaluation of the Gradient Boosting Decision Tree model trained on six months of simulated HomeQuest activity logs. The goal is not perfect binary prediction but estimating relative completion likelihoods for ranking daily challenges.
 
+A. Dataset and Evaluation Setup
+
+Input features include weekday, personal points, family points, energy usage, mode, category, duration type, progress type, device type, and user identifier.
+
+The target output is the completion of each challenge event.
+
+Data was split chronologically to reflect real-world usage.
+
+First two-thirds of the timeline used for training.
+
+Remaining one-third used for testing.
+
+This ensures that the model learns from past events and predicts future user behavior.
+
+B. Main Model Quantitative Results
+
+The main GBDT model produced the following scores on the test set:
+
+AUC: 0.5587
+
+RMSE: 0.547
+
+MAE: 0.4758
+
+Accuracy: 0.5574
+
+Interpretation of these values:
+
+User behavior in the dataset fluctuates heavily between zero and one.
+
+Many important behavioral factors are not captured by available features.
+
+Perfect classification is unrealistic in this setting.
+
+The model is intended to generate relative probability scores for ranking challenges, not to make perfect binary predictions.
+
+Therefore, these values are acceptable within the context of recommendation logic.
+
+C. Trend Comparison Using Moving Average
+
+To provide a clearer comparison between predicted probabilities and actual completion behavior, a moving average with a window size of ten samples was applied.
+
+Insert Figure here:
+
+Figure X. Smoothed Trends of Predicted and Actual Completion
+(graph file: gbdt_smoothed_trend.png)
+
+Use the following in Overleaf:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{gbdt_smoothed_trend.png}
+\caption{Smoothed trends of predicted probabilities and actual completion rates.}
+\end{figure}
+
+Interpretation:
+
+The smoothed predicted probabilities rise during periods when the smoothed actual completion rate increases.
+
+Both curves decrease during intervals of lower completion behavior.
+
+The two curves share similar global patterns even though they do not match event by event.
+
+This demonstrates that the model captures general behavioral tendencies despite high noise.
+
+For a recommendation system, capturing trend-level information is more important than exact classification accuracy.
+
+D. Speed Challenge Model
+
+A separate GBDT model was trained to predict whether a speed-type challenge would be completed within one hour after notification. The model reached an AUC of 0.9994 in the simulated environment.
+
+Interpretation:
+
+The extremely high value is due to the deterministic structure of simulated duration data.
+
+Training and testing were performed on the same dataset, creating an optimistic evaluation.
+
+Real-world evaluation should include a proper time-based split.
+
+E. Overall Interpretation
+
+The main model functions as a ranking model rather than a strict classifier.
+
+The moving average comparison confirms that the model captures meaningful behavioral patterns.
+
+The model provides stable signals that are suitable for prioritizing challenge recommendations.
+
+While the simulation contains noise and limited behavioral variables, the GBDT framework remains a practical foundation for future improvements.
 
 ## V. Related Work (e.g., existing studies)
 
