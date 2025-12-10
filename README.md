@@ -235,12 +235,12 @@ def is_available(ch, last_done, today):
 ```
 
 Additionally, monthly heating-saving challenges are recommended only if recent heating usage has increased, based on a simple comparison of energy consumption in the earlier vs. later period.
-
+```python
 e = events[events["category"] == "energy"]
 prev = e[e["day_index"] < 30]["energyKwh"].sum()
 last = e[e["day_index"] >= 30]["energyKwh"].sum()
 energy_high = bool(last > prev)
-
+```
 
 This ensures that only contextually relevant and available challenges remain for scoring.
 
@@ -251,33 +251,33 @@ For each remaining candidate, the models compute success probabilities:
 Main model: probability of completing a daily or monthly challenge today
 
 Speed model: probability of completing a speed challenge within one hour for each possible notification time
-
+```python
 scores = main_model.predict_proba(df_main)[:, 1]      # completion probability
 probs  = speed_model.predict_proba(df_feat)[:, 1]     # 1-hour completion probability
-
+```
 
 Speed-mode scoring evaluates multiple candidate notification times (06:00–22:00) and selects the most promising time window.
 
 3) Score Adjustment: Recommendation Penalty (α × freq) + Softmax Sampling
 
 To prevent repetitive recommendations, each challenge’s score is adjusted using a frequency penalty:
-
+```python
 cand["freq"] = cand["challengeId"].map(
     lambda cid: recommend_count.get(cid, 0)
 )
 cand["adj_score"] = cand["score"] - ALPHA * cand["freq"]
-
+```
 
 freq: how many times the challenge has been recommended
 
 ALPHA: a small coefficient that slightly reduces the score of frequently shown tasks
 
 After adjustment, only the top-K candidates are retained, and Softmax-like sampling introduces diversity:
-
+```python
 w = np.exp(cand_top["adj_score"])
 p = w / w.sum()
 chosen = cand_top.sample(n=1, weights=p).iloc[0]
-
+```
 
 This ensures that high-scoring challenges are preferred, but not always repeated, creating a more engaging user experience.
 
@@ -290,7 +290,7 @@ one daily challenge
 one monthly challenge (if the energy condition allows)
 
 one speed challenge with the optimized notification time selected by the speed model
-
+```python
 daily   = recommend_non_speed("daily")
 monthly = recommend_non_speed("monthly")
 speed   = recommend_speed()
@@ -304,6 +304,7 @@ return {
     "main_auc": auc_main,
     "speed_auc": auc_sp,
 }
+```
 
 ## IV. Evaluation & Analysis
 This section presents the evaluation of the Gradient Boosting Decision Tree model trained on six months of simulated HomeQuest activity logs. The goal is not perfect binary prediction but estimating relative completion likelihoods for ranking daily challenges.
