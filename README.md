@@ -85,6 +85,7 @@ This label serves as the target variable for the main completion model.
 completed_within_1h
 Indicates whether the user completed the challenge within 60 minutes after receiving the notification (1 = completed).
 This label is used for the speed-challenge model, which predicts short-term completion behavior.
+
 ---
 
 ## Dataset Usage
