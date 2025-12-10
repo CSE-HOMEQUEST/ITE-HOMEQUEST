@@ -30,8 +30,11 @@
 
 ## II. Datasets
 HomeQuest uses a fixed six-month simulated event-log dataset designed to mimic a real smart-home service environment.
+
 Initially, the dataset contained about 360 manually constructed events, but this volume was not sufficient for training robust machine-learning models.
+
 To address this, we expanded the dataset to roughly 10,000 records by generating additional synthetic events using the OpenAI API, following the same schema and behavioral constraints as the original data.
+
 Each event represents a full challenge interaction by a family member and contains challenge attributes, user context, time information, device data, energy usage, and success outcomes.
 
 ---
