@@ -218,7 +218,7 @@ The HomeQuest recommendation engine follows a clear sequence:
 The engine first removes challenges that cannot be recommended today.
 Challenge metadata and cooldown rules determine whether each challenge is eligible.
 
-```
+```python
 challenge_meta = pd.DataFrame([...], columns=[
     "challengeId", "category", "mode", "durationType",
     "progressType", "deviceType", "cooldown_days"
