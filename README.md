@@ -213,7 +213,7 @@ Such structural characteristics directly influence completion feasibility and th
 The HomeQuest recommendation engine follows a clear sequence:
 (1) candidate filtering → (2) model scoring → (3) score adjustment & diversity → (4) final recommendation generation.
 
-1) Candidate Filtering (Cooldown + Energy Condition)
+### 1) Candidate Filtering (Cooldown + Energy Condition)
 
 The engine first removes challenges that cannot be recommended today.
 Challenge metadata and cooldown rules determine whether each challenge is eligible.
@@ -244,7 +244,7 @@ energy_high = bool(last > prev)
 
 This ensures that only contextually relevant and available challenges remain for scoring.
 
-2) Model Scoring (Completion Probability / 1-Hour Completion Probability)
+### 2) Model Scoring (Completion Probability / 1-Hour Completion Probability)
 
 For each remaining candidate, the models compute success probabilities:
 
@@ -258,7 +258,7 @@ probs  = speed_model.predict_proba(df_feat)[:, 1]     # 1-hour completion probab
 
 Speed-mode scoring evaluates multiple candidate notification times (06:00–22:00) and selects the most promising time window.
 
-3) Score Adjustment: Recommendation Penalty (α × freq) + Softmax Sampling
+### 3) Score Adjustment: Recommendation Penalty (α × freq) + Softmax Sampling
 
 To prevent repetitive recommendations, each challenge’s score is adjusted using a frequency penalty:
 ```python
@@ -281,7 +281,7 @@ chosen = cand_top.sample(n=1, weights=p).iloc[0]
 
 This ensures that high-scoring challenges are preferred, but not always repeated, creating a more engaging user experience.
 
-4) Final Recommendation Generation
+### 4) Final Recommendation Generation
 
 Finally, the system outputs exactly one challenge per category:
 
