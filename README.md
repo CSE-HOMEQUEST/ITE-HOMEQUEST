@@ -76,20 +76,15 @@ Different users follow different lifestyle patterns (morning-type, regular, even
 
 ### Outcome Labels
 
-Two outcome labels are provided for model training:
+Two outcome labels are used for model training:
 
 completed
-
-– 1 if the challenge was completed within the same day
-
-– used as the target of the main model
+Indicates whether the challenge was finished on the same day (1 = completed).
+This label serves as the target variable for the main completion model.
 
 completed_within_1h
-
-– 1 if the user completed the challenge within 60 minutes after the notification
-
-– used for the speed-challenge time optimization model
-
+Indicates whether the user completed the challenge within 60 minutes after receiving the notification (1 = completed).
+This label is used for the speed-challenge model, which predicts short-term completion behavior.
 ---
 
 ## Dataset Usage
@@ -136,23 +131,28 @@ Because the dataset is fixed, the evaluation is reproducible.
 ## 1. Choice of Algorithms
 
 - Low preprocessing overhead
+
 GBDT can handle both categorical and numerical variables without heavy transformation.
 This keeps the pipeline simple and allows the augmented dataset—with many new combinations of feature values—to be used directly without extensive encoding.
 
 - Effective at learning non-linear behavioral patterns
+
 Challenge completion often depends on interactions among factors such as time of day, user type, and device usage.
 GBDT captures these non-linear relationships naturally, enabling the model to represent realistic user behavior where multiple conditions interact simultaneously.
 
 - Well-suited for probability-based recommendation
+
 The HomeQuest recommendation logic begins by estimating the probability that each challenge will be completed under current conditions, then uses this probability as the ranking score.
 GBDT, trained with logistic loss, produces stable probability estimates for binary outcomes, aligning perfectly with this workflow.
 It also accommodates diverse behavioral contexts, enabling more accurate probability predictions that feed directly into Softmax sampling and the final recommendation step.
 
 - Fast inference for real-time recommendation
+
 Because prediction is based on tree traversal, inference is extremely fast.
 Even with the dataset expanded to 10,000 records, the model remains lightweight enough to generate recommendations instantly whenever the user opens the app.
 
 - High model interpretability
+
 Feature importance analysis allows us to understand which factors influence completion likelihood.
 This transparency is useful for system refinement and explaining recommendation outcomes to stakeholders.
 
