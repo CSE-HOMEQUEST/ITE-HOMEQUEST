@@ -135,48 +135,77 @@ Because the dataset is fixed, the evaluation is reproducible.
 ## III. Methodology
 ## 1. Choice of Algorithms
 
-The HomeQuest dataset contains both categorical features (weekday, userId, category, mode, device type) and numerical features (points, energy usage, notification time).
+Low preprocessing overhead
+GBDT can handle both categorical and numerical variables without heavy transformation.
+This keeps the pipeline simple and allows the augmented dataset—with many new combinations of feature values—to be used directly without extensive encoding.
 
-User behavior also shows non-linear patterns, especially in time-of-day and task-type differences.
+Effective at learning non-linear behavioral patterns
+Challenge completion often depends on interactions among factors such as time of day, user type, and device usage.
+GBDT captures these non-linear relationships naturally, enabling the model to represent realistic user behavior where multiple conditions interact simultaneously.
 
-For these reasons, a tree-based ensemble model was selected.
+Well-suited for probability-based recommendation
+The HomeQuest recommendation logic begins by estimating the probability that each challenge will be completed under current conditions, then uses this probability as the ranking score.
+GBDT, trained with logistic loss, produces stable probability estimates for binary outcomes, aligning perfectly with this workflow.
+It also accommodates diverse behavioral contexts, enabling more accurate probability predictions that feed directly into Softmax sampling and the final recommendation step.
 
-We adopt the Gradient Boosting Classifier (GBDT) because it:
+Fast inference for real-time recommendation
+Because prediction is based on tree traversal, inference is extremely fast.
+Even with the dataset expanded to 10,000 records, the model remains lightweight enough to generate recommendations instantly whenever the user opens the app.
 
-- handles mixed feature types without heavy preprocessing
-- captures complex interactions in user activity patterns
-- provides stable performance even with limited feature engineering
-
-Two separate GBDT models are trained:
-
-- a model predicting whether a daily/monthly challenge will be completed
-- a model predicting whether a speed challenge will be completed within one hour
-
----
-
-## 2. Features and Code Structure
-
-### Feature Design
-
-Each model uses event-level features extracted from the simulated logs.
-
-User and Time Features
-
-- weekday: weekly behavior patterns
-- userId: differences in lifestyle rhythms among users
-- notificationTime: key variable for speed-challenge responsiveness
-- energyKwh: signals related to heating/energy tasks
-
-Challenge Attributes
-
-- category, mode
-- durationType: distinguishes between short-term and long-term difficulty
-- progressType: counter/device/energy, representing the nature of the action
-- deviceType: appliance involvement
-
-All categorical variables are transformed through one-hot encoding before training.
+High model interpretability
+Feature importance analysis allows us to understand which factors influence completion likelihood.
+This transparency is useful for system refinement and explaining recommendation outcomes to stakeholders.
 
 ---
+
+## 2. Features design
+
+
+
+- weekday
+
+User activity patterns vary significantly across the week.
+Workdays, weekends, and routine patterns tied to specific days strongly influence whether a user can complete a challenge, making this a key temporal feature.
+
+userId (user profile)
+
+Each user follows a distinct lifestyle pattern—morning-type, evening-type, student, etc.—which affects their likelihood of completing certain tasks.
+The same challenge can have very different success probabilities depending on the user, so this feature is essential.
+
+category (challenge category)
+
+Health, cleaning, laundry, and energy challenges differ widely in difficulty and user motivation.
+Baseline success rates vary across categories, so this feature helps the model capture structural differences in task behavior.
+
+mode (daily / speed / monthly)
+
+Each challenge mode has unique completion conditions and user burden levels.
+Speed challenges in particular have strict time constraints, creating distinct behavioral patterns the model must learn.
+
+deviceType
+
+Some challenges require specific appliances such as a washer, AC, or robot vacuum.
+Availability and typical usage patterns of these devices influence completion probability, making deviceType an important contextual input.
+
+notificationTime
+
+The time at which a challenge is delivered greatly impacts success.
+Earlier notifications generally lead to higher completion rates, while late notifications tend to decrease them, so this feature plays a key role in modeling user responsiveness.
+
+personalPoints (engagement indicator)
+
+Higher accumulated points signal a user who consistently engages with challenges.
+Users with high participation scores tend to complete more tasks, making this feature a strong predictor of success.
+
+energyKwh (daily energy consumption)
+
+For energy-related challenges, the user’s actual consumption pattern is directly tied to task execution.
+Heating or cooling challenges often correlate with daily energy usage levels, giving this feature predictive value.
+
+progressType / durationType / cooldown_days (contextual task properties)
+
+These fields describe how a challenge is completed (counter-based, device-linked, energy-based), how long it typically takes, and whether a mandatory cooldown applies.
+Such structural characteristics directly influence completion feasibility and thus contribute meaningfully to the model’s predictions.
 
 ## 3. Code Structure Overview
 
