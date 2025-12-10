@@ -210,42 +210,99 @@ Such structural characteristics directly influence completion feasibility and th
 
 ## 3. Code Structure Overview
 
-The recommendation pipeline is structured as follows:
+The HomeQuest recommendation engine follows a clear sequence:
+(1) candidate filtering → (2) model scoring → (3) score adjustment & diversity → (4) final recommendation generation.
 
-Dataset Loading
+1) Candidate Filtering (Cooldown + Energy Condition)
 
-- A fixed six-month event log (CSV) is loaded and treated as the “historical behavior” of the family.
-- This approach mirrors real smart-home environments where past interactions remain constant.
+The engine first removes challenges that cannot be recommended today.
+Challenge metadata and cooldown rules determine whether each challenge is eligible.
+```python
+challenge_meta = pd.DataFrame([...], columns=[
+    "challengeId", "category", "mode", "durationType",
+    "progressType", "deviceType", "cooldown_days"
+])
 
-Model Training
+def is_available(ch, last_done, today):
+    cd = ch["cooldown_days"]
+    if cd == 0:
+        return True
+    cid = ch["challengeId"]
+    if cid not in last_done:
+        return True
+    return (today - last_done[cid]) >= cd
+'''
 
-- A time-aware split using `day_index` separates training and testing periods.
-- Two GBDT models are trained: one for daily/monthly challenges and one for speed tasks.
+Additionally, monthly heating-saving challenges are recommended only if recent heating usage has increased, based on a simple comparison of energy consumption in the earlier vs. later period.
 
-Candidate Filtering
+e = events[events["category"] == "energy"]
+prev = e[e["day_index"] < 30]["energyKwh"].sum()
+last = e[e["day_index"] >= 30]["energyKwh"].sum()
+energy_high = bool(last > prev)
 
-- Challenges with active cooldown restrictions are removed.
-- Energy-saving tasks are considered only when heating usage increases.
 
-Model Scoring
+This ensures that only contextually relevant and available challenges remain for scoring.
 
-- The main model outputs completion probabilities.
-- The speed model outputs one-hour completion probabilities for each possible notification time.
+2) Model Scoring (Completion Probability / 1-Hour Completion Probability)
 
-Diversity Adjustment
+For each remaining candidate, the models compute success probabilities:
 
-- Only the top candidates (top-K) are kept.
-- A softmax-based sampling step prevents the system from recommending the same challenge repeatedly.
-- Recommendation counts are stored in a JSON file and used to reduce the score of frequently recommended items.
+Main model: probability of completing a daily or monthly challenge today
 
-Final Recommendation
+Speed model: probability of completing a speed challenge within one hour for each possible notification time
 
-- The system outputs one recommended daily task, one monthly task (if applicable),
-    
-    and one speed challenge with an optimized notification time.
-    
+scores = main_model.predict_proba(df_main)[:, 1]      # completion probability
+probs  = speed_model.predict_proba(df_feat)[:, 1]     # 1-hour completion probability
 
-This hybrid design combines model-based prediction with policy-based logic, enabling personalized and context-aware challenge recommendations.
+
+Speed-mode scoring evaluates multiple candidate notification times (06:00–22:00) and selects the most promising time window.
+
+3) Score Adjustment: Recommendation Penalty (α × freq) + Softmax Sampling
+
+To prevent repetitive recommendations, each challenge’s score is adjusted using a frequency penalty:
+
+cand["freq"] = cand["challengeId"].map(
+    lambda cid: recommend_count.get(cid, 0)
+)
+cand["adj_score"] = cand["score"] - ALPHA * cand["freq"]
+
+
+freq: how many times the challenge has been recommended
+
+ALPHA: a small coefficient that slightly reduces the score of frequently shown tasks
+
+After adjustment, only the top-K candidates are retained, and Softmax-like sampling introduces diversity:
+
+w = np.exp(cand_top["adj_score"])
+p = w / w.sum()
+chosen = cand_top.sample(n=1, weights=p).iloc[0]
+
+
+This ensures that high-scoring challenges are preferred, but not always repeated, creating a more engaging user experience.
+
+4) Final Recommendation Generation
+
+Finally, the system outputs exactly one challenge per category:
+
+one daily challenge
+
+one monthly challenge (if the energy condition allows)
+
+one speed challenge with the optimized notification time selected by the speed model
+
+daily   = recommend_non_speed("daily")
+monthly = recommend_non_speed("monthly")
+speed   = recommend_speed()
+
+return {
+    "userId": TARGET_USER,
+    "daily": daily,
+    "monthly": monthly,
+    "speed": speed,
+    "energyHigh": energy_high,
+    "main_auc": auc_main,
+    "speed_auc": auc_sp,
+}
 
 ## IV. Evaluation & Analysis
 This section presents the evaluation of the Gradient Boosting Decision Tree model trained on six months of simulated HomeQuest activity logs. The goal is not perfect binary prediction but estimating relative completion likelihoods for ranking daily challenges.
