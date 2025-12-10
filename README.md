@@ -135,24 +135,24 @@ Because the dataset is fixed, the evaluation is reproducible.
 ## III. Methodology
 ## 1. Choice of Algorithms
 
-Low preprocessing overhead
+- Low preprocessing overhead
 GBDT can handle both categorical and numerical variables without heavy transformation.
 This keeps the pipeline simple and allows the augmented dataset—with many new combinations of feature values—to be used directly without extensive encoding.
 
-Effective at learning non-linear behavioral patterns
+- Effective at learning non-linear behavioral patterns
 Challenge completion often depends on interactions among factors such as time of day, user type, and device usage.
 GBDT captures these non-linear relationships naturally, enabling the model to represent realistic user behavior where multiple conditions interact simultaneously.
 
-Well-suited for probability-based recommendation
+- Well-suited for probability-based recommendation
 The HomeQuest recommendation logic begins by estimating the probability that each challenge will be completed under current conditions, then uses this probability as the ranking score.
 GBDT, trained with logistic loss, produces stable probability estimates for binary outcomes, aligning perfectly with this workflow.
 It also accommodates diverse behavioral contexts, enabling more accurate probability predictions that feed directly into Softmax sampling and the final recommendation step.
 
-Fast inference for real-time recommendation
+- Fast inference for real-time recommendation
 Because prediction is based on tree traversal, inference is extremely fast.
 Even with the dataset expanded to 10,000 records, the model remains lightweight enough to generate recommendations instantly whenever the user opens the app.
 
-High model interpretability
+- High model interpretability
 Feature importance analysis allows us to understand which factors influence completion likelihood.
 This transparency is useful for system refinement and explaining recommendation outcomes to stakeholders.
 
@@ -167,42 +167,42 @@ This transparency is useful for system refinement and explaining recommendation 
 User activity patterns vary significantly across the week.
 Workdays, weekends, and routine patterns tied to specific days strongly influence whether a user can complete a challenge, making this a key temporal feature.
 
-userId (user profile)
+- userId (user profile)
 
 Each user follows a distinct lifestyle pattern—morning-type, evening-type, student, etc.—which affects their likelihood of completing certain tasks.
 The same challenge can have very different success probabilities depending on the user, so this feature is essential.
 
-category (challenge category)
+- category (challenge category)
 
-Health, cleaning, laundry, and energy challenges differ widely in difficulty and user motivation.
-Baseline success rates vary across categories, so this feature helps the model capture structural differences in task behavior.
+Health, household, and energy-saving challenges differ significantly in both difficulty and user motivation.
+Because each category has its own baseline success pattern, this feature allows the model to capture the structural differences in how users respond to each type of task.
 
-mode (daily / speed / monthly)
+- mode (daily / speed / monthly)
 
 Each challenge mode has unique completion conditions and user burden levels.
 Speed challenges in particular have strict time constraints, creating distinct behavioral patterns the model must learn.
 
-deviceType
+- deviceType
 
 Some challenges require specific appliances such as a washer, AC, or robot vacuum.
 Availability and typical usage patterns of these devices influence completion probability, making deviceType an important contextual input.
 
-notificationTime
+- notificationTime
 
 The time at which a challenge is delivered greatly impacts success.
 Earlier notifications generally lead to higher completion rates, while late notifications tend to decrease them, so this feature plays a key role in modeling user responsiveness.
 
-personalPoints (engagement indicator)
+- personalPoints (engagement indicator)
 
 Higher accumulated points signal a user who consistently engages with challenges.
 Users with high participation scores tend to complete more tasks, making this feature a strong predictor of success.
 
-energyKwh (daily energy consumption)
+- energyKwh (daily energy consumption)
 
 For energy-related challenges, the user’s actual consumption pattern is directly tied to task execution.
 Heating or cooling challenges often correlate with daily energy usage levels, giving this feature predictive value.
 
-progressType / durationType / cooldown_days (contextual task properties)
+- progressType / durationType / cooldown_days (contextual task properties)
 
 These fields describe how a challenge is completed (counter-based, device-linked, energy-based), how long it typically takes, and whether a mandatory cooldown applies.
 Such structural characteristics directly influence completion feasibility and thus contribute meaningfully to the model’s predictions.
