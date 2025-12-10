@@ -217,7 +217,8 @@ The HomeQuest recommendation engine follows a clear sequence:
 
 The engine first removes challenges that cannot be recommended today.
 Challenge metadata and cooldown rules determine whether each challenge is eligible.
-```python
+
+```
 challenge_meta = pd.DataFrame([...], columns=[
     "challengeId", "category", "mode", "durationType",
     "progressType", "deviceType", "cooldown_days"
@@ -231,7 +232,7 @@ def is_available(ch, last_done, today):
     if cid not in last_done:
         return True
     return (today - last_done[cid]) >= cd
-'''
+```
 
 Additionally, monthly heating-saving challenges are recommended only if recent heating usage has increased, based on a simple comparison of energy consumption in the earlier vs. later period.
 
