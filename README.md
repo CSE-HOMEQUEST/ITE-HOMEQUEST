@@ -370,5 +370,18 @@ E. Overall Interpretation
 
 ## V. Related Work (e.g., existing studies)
 
+- **Duan, T., Avati, A., Ding, D., Thai, K., Basu, S., Ng, A., & Schuler, A. (2020). *NGBoost: Natural Gradient Boosting for Probabilistic Prediction.***
+
+Duan et al. (2020) present NGBoost, a probabilistic extension of gradient boosting that overcomes the traditional limitation of producing only point estimates. Instead of predicting a single scalar output, NGBoost models the full conditional distribution by learning multiple parameters—such as mean and variance—through a set of differentiable scoring rules. One of its core contributions is the use of natural gradients, which stabilize the optimization landscape when fitting multiple distribution parameters simultaneously. The authors show that this approach yields well-calibrated uncertainty estimates and robust predictive performance on diverse tabular datasets.
+
+This work is highly relevant to HomeQuest because our system requires not only a binary prediction of whether a challenge will succeed but a well-behaved probability estimate that reflects the confidence of the model under behavioral uncertainty. Household activity data, much like user-generated behavioral logs, tends to be noisy, irregular, and context-dependent. NGBoost demonstrates that gradient-boosting-based models remain expressive and stable under such conditions and reinforces the idea that boosted decision trees can be extended to probabilistic modeling without sacrificing interpretability. While HomeQuest does not implement the NGBoost architecture directly, the paper provides theoretical justification for using GBDT-style models as probability estimators and using those probabilities as the driving signal for stochastic recommendation mechanisms such as softmax sampling.
+
+---
+
+- **Friedman, J. H. (2001). *Greedy Function Approximation: A Gradient Boosting Machine.***
+
+Friedman (2001) formulates gradient boosting as a general framework for function approximation by viewing supervised learning as numerical optimization in function space. The paper shows that an additive model composed of many simple base learners—typically shallow regression trees—can be trained by performing stagewise gradient descent on an arbitrary differentiable loss function. In practice, this leads to the now-standard Gradient Boosting Decision Tree (GBDT) procedure, where each tree is fitted to the negative gradient (pseudo-residuals) of the loss, and regularization is controlled through the number of trees, their depth, and the learning rate.
+
+The paper also provides concrete algorithms for several loss functions, including least-squares, least absolute deviation, Huber loss, and logistic loss, and demonstrates that tree-based gradient boosting yields competitive, robust models on noisy tabular data. This work is the classical theoretical foundation for the GBDT model used in our HomeQuest system: we follow this paradigm by training a tree-based gradient boosting classifier on historical challenge logs to approximate the probability that a given challenge will be successfully completed, and then use these predicted probabilities as the primary signal for ranking and recommending daily, monthly, and speed challenges to each user.
 
 ## VI. Conclusion: Discussion
